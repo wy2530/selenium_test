@@ -1,0 +1,9 @@
+name: 'hello'
+age: 18
+data:
+  a: 1
+  b: 2
+list:
+  - a
+  - b
+  - c

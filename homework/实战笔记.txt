@@ -1,0 +1,28 @@
+本项目为自动化测试 selenium和unittest整合项目实战
+
+简介：小D课题官方自动化测试需求场景，和项目基础框架搭建
+
+解耦文件，始得每一个文件都可以单独运行，在整合
+
+project:
+    login_order.py  #登录下单测试用例
+    category.py     #菜单分类测试用例
+
+    all_test.py  #主入口
+
+login_order.py
+1、遇到的问题一：
+  在使用selenium的点击时，页面跳转到了新页面，因此定位不到元素
+
+
+邮件的知识：https://www.cnblogs.com/ysocean/p/7652934.html
+    SMTP协议：简单邮件传输协议，它定义了邮件客户端软件和SMTP邮件服务器之间，以及两台SMTP邮件服务器之间的通信规则
+    POP3协议：邮局协议，定义了邮件客户端软件和POP3邮件服务器通信规格
+    IMAP协议：消息访问协议，对POP3协议的一种扩展，也定义了邮件客户端软件和IMAP邮件服务器的通信规则
+
+
+A:waitforxy@126.com
+B:waitfordev@126.com
+
+smtp地址：smtp.126.com
+

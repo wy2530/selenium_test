@@ -1,0 +1,279 @@
+## 前期准备
+1. 安装selenium
+
+2. 下载浏览器对应的驱动(浏览器版本对应)
+
+  我用的谷歌，看版本的办法：URL中输入   `chrome://version/`
+
+3. 将驱动放入所用的虚拟环境中
+
+## 自动打开浏览器网页
+```
+from selenium import webdriver
+driver = webdriver.Chrome()  # 驱动
+driver.get("https://cn.bing.com/?FORM=BEHPTB")  # 打开页面
+```
+
+## 自动化测试
+
+**8种元素定位**
+1. 通过id定位
+2.
+CSS定位
+可以检查元素--->直接复制
+#detail-page > div.title_border > div > div.article-title > h2
+
+3.xpath定位
+
+
+
+send.keys()  # 输入
+click() #点击
+title #标题(没括号)
+
+定位可能报错：原因是可能该定位元素不存在吧，换一个定位
+
+selenium 的断言 assess是啥？？
+
+**模拟事件处理**
+事件1：模拟用户行为
+
+
+**hover菜单栏弹出**
+事件2： 鼠标事件 菜单栏hover弹出
+ 1. 引入ActionChains类
+ from selenium.webdriver.common.action_chains import ActionChains
+ 2. 定位某个元素并将鼠标移入
+ ActionChains(driver).move_to_element(menu_ele).perform()
+
+**模拟用户登录**
+事件3： 目标：查找登录框==> 输入用户名和密码==>触发登录 ==> 判断是否登录成功 ==> 打印结果
+
+**网页等待事件**
+你需要等待网页加载完成才可以点击(页面渲染、处理接口都需要时间)
+等待办法：
+1. 强制等待
+  import time
+  time.sleep(2)
+2. 隐性等待
+  driver.implicitly_wait(N) #N为设置的最长等待时间
+  如果在规定时间内完成加载，则直接执行下一步，如没有，或抛出异常
+
+  缺点：加载完成指的是整个页面加载完成，表现为浏览器标签栏的加载圈不在转
+  另外，对driver起作用，只需要设置一次即可
+
+  可以用(结束时间-开始时间)计算一下,进行对比
+3. 显性等待
+          # 最长等待时间为5秒，每隔0.5秒检查一次是否找到id为"kw"的元素，如果成功执行下一步
+   WebDriverWait(driver, 5, 0, 5).until(EC.presence_of_element_located((By.ID, "kw")))
+   有until 和 until_not ？？？
+
+    from selenium.webdriver.common.by import By
+    from selenium.webdriver.support.ui import WebDriverWait
+    from selenium.webdriver.support import expected_conditions as EC
+
+注：显性等待和隐形等待可以一起使用，时间按最长的来等待
+
+
+**单选框选择测试**
+若是本地文件，只能在页面打开位置的浏览器窗口 复制绝对路径
+
+**弹窗处理(alert 和 confirm)**
+定位后点击，可以有弹框
+但是弹框常用办法：(需要先切换窗口 switch_to.alert())
+
+accept()  # 点确定
+dismiss() # 点取消
+
+**验证码解决方式**
+1. 破解验证码
+  OCR识别： python破解验证码
+  AI识别：Tensorflow破解验证码
+2. 绕过
+  让开发人员临时关闭验证码
+  提供一个万能验证码(只有开发测试使用)
+3. 使用cookie(登录拿cookie,获取登录凭证)
+
+事件4：cookie(重要)
+
+driver.add_cookie({"name": "name", "value": " jack"})  # 用户名，用户名称，头像 都可以加入
+driver.add_cookie({"name": "name", "value": " jack"})  # 用户凭证可以手动添加
+
+**自动化测试错误截图**
+事件5： 使用webdriver自动截图
+
+这个：emmm,我可能不会用try...except
+  如何截图到 用户名或者密码不正确？
+
+  测试某个div是否display
+
+
+
+## 框架：unittest
+
+单元测试：一个功能一个模块
+unittest = TestCase + TestResult  执行用例 + 结果
+
+大概样子：
+
+import unittest
+
+class UserTestCase(unittest.TestCase):
+    def setUp(self):
+        pass
+
+    def tearDown(self):
+        pass
+
+    def test_name(self):
+        pass
+
+
+if __name__ == '__main__':
+    unittest.main()
+
+
+**重点**
+1. 用import导入unittest类
+2. 测试的类都继承于TestCase类
+3. 内部有三部分： setup() 、tearDown() 、test_name()
+   执行顺序也是setup() ===> test_name() ===> tearDown() ，即使换了位置也是如此
+   setup():测试前的初始化工作(在每一个测试方法运行前被调用)
+   tearDown():测试后的清除工作(在每一个测试方法运行后被调用)
+   test_name():可以有多个，但必须以test开头(按字母顺序输出)
+
+4.成功时输出. 失败时输出F
+
+
+unittest有四大部分：
+test fixture: setUp()、tearDown()
+test case:测试用例，继承unittest.TestCase，在UnitTest中，测试用例都是通过test来识别的
+test suite:测试套件，测试用例集
+test runner:运行器，通过runner去调用suite去执行测试
+
+
+setUp(self)、setUpClass(cls)：
+   一个是用例的初始化，一个是类的初始化
+   类的初始化一定要加上@classmethod装饰器
+tearDown(self)、tearDownClass(cls)
+    一个是用例的释放，一个是类的释放
+   类的释放一定要加上@classmethod装饰器
+
+
+运行的的时候可以看见日志目录：每一层都有
+另外会显示N of n  一共N条,执行了n条
+
+unittest有案例结束后，自动关闭的功能
+unittest2.py中，描述了你可以将每次测试案例前都需要做的东西放入setup()中
+               此时会跟每一个案例都写有不同点，比如这样写会等待一个案例执行完毕并自动关闭后开始执行下一个案例
+
+
+**ddt:数据驱动**
+ddt:数据驱动,因为在实际测试中，单个测试是需要用 多种不同条件 来进行测试的
+基本使用方式：
+   导入from ddt import ddt, data
+   类前加@ddt, 表示要是用ddt了，再根据实际的应用选择对应的装饰器
+//   测试用例前加@data
+加一个参数：@data  设定参数
+        @data('自动化', '文本')      //这里data里面是两个元素，会执行两次
+        @data(('自动化', '文本'),)   //这里data里面是一个元组，是一个整体，一个参数时需要加逗号
+加两个参数: @data  @unpack  解压参数
+        @data(('自动化', '文本'), ('hello', 'world'))
+        @unpack    //会将每一个小元组按照逗号解压并分配
+多个参数可以直接用**kwargs.get
+
+可以读取文件：@data(*文件名字)
+
+ddt对于数据的解析方式：解压一个，传入一个  (与传参的名称没有关系,只跟解析顺序有关)
+
+还有一种@file_data:ddt中用于读取yml文件的装饰器
+需要安装一个包：pip install PyYAML
+            引入：import yaml
+yml文件的格式：
+    name: 'www'
+    info: '222'
+(用不用加引号呢)
+
+
+** YML文件的操作**
+demo.py  a.yml
+
+yml与json格式的区别？
+ https://cloud.tencent.com/developer/ask/26911
+
+
+
+
+
+
+
+**断言**
+断言不是很懂：
+    在unittest中,testCase已经提供了封装好的断言方法进行断言校验
+
+断言：用于校验实际结果与预期结果是否相匹配
+断言强调的是对于整个测试流程的结果进行判断
+因此 需要做断言的是检查的 核心点,也就是 页面内的原本的内容，最好不要是title
+https://www.cnblogs.com/du-hong/p/10755859.html
+
+assert后面的全是断言的方法
+(有一个表，整理的时候找一下)
+
+**unittest.skip()**
+在Case中，对于不需要运行的用例 或者 特定条件下不执行的用例， 可以用skip()来实现有条件执行 或者 绝对性的跳过，用于指定用例进行不执行操作
+用法：使用装饰器
+ 1、无条件跳过
+    @unittest.skip("不运行的理由")
+ 2、有条件跳过
+    @unittest.skipIf("条件","理由")   If 是：条件为True时跳过
+    @unittest.skipUnless()("条件","理由")  Unless 是：条件为False时跳过
+ 3、有该装饰器后，无论输出什么，都按正常来进行，即使运行失败
+    @unittest.expectedFailure
+
+
+
+问题：
+但是发现了一个不一样的地方,如果运行ui_test.py时，就不会显示理由
+如果运行unittest for ui_test.UserTestCase时，就会显示理由
+而且这两种运行方式有什么区别吗？
+   Pycharm上python运行和unittest运行两种解析方式不同
+
+https://www.cnblogs.com/muchengnanfeng/p/9562043.html
+
+
+
+
+**测试套件以及runner的应用**
+因为unittest有自定的排序，但是如果想要按照我们的顺序进行，可以使用套件
+
+1. unittest.TestSuite()类来表示一个测试用例集
+....
+
+
+
+**TestSuite生成测试报告**
+事件：HTMLTestRunner介绍
+HTMLTestRunner 需要下载，但没有pip的集成包，下载完之后，
+
+1、导入 import HTMLTestRunner
+2、最后runner前改一下
+  file_prefix=time.strftime("")
+
+3、改进点：在测试用例最前面写 u"用例说明"
+
+
+## selenium和unittest整个项目测试
+
+
+**TestSuite使用**
+TestSuite类似于一个测试集
+
+if __name__ == '__main__':
+    suite = unittest.TestSuite()
+    suite.addTest(类名("测试用例"))
+
+
+
+
+
+
