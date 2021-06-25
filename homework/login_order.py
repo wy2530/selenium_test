@@ -28,11 +28,11 @@ class LoginOrderTestCase(unittest.TestCase):
         # 查找输入框,输入账号，输入框要提前清理里面的数据
         login = driver.find_element_by_xpath("//*[@id='app']/div/div[1]/div/div[2]/div[2]/div/div[1]/input")
         login.clear()
-        login.send_keys("15081983129")
+        login.send_keys("XXXXX")
         # 查找密码输入框，输入密码
         pwd = driver.find_element_by_xpath("//*[@id='app']/div/div[1]/div/div[2]/div[2]/div/div[2]/input")
         pwd.clear()
-        pwd.send_keys("wy453521")
+        pwd.send_keys("XXXXX")
 
         # 拿到登录按钮
         login_btn_ele = driver.find_element_by_xpath("//*[@id='app']/div/div[1]/div/div[2]/div[2]/div/div[3]/button")
